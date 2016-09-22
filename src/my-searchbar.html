@@ -4,23 +4,26 @@
 
 
 <dom-module id="my-searchbar">
-  <template>
-    <style include="shared-styles">
-      :host {
-        display: block;
-        padding-left: 10px;
-        padding-top: 10px;
-        padding-right: 10px;
-      }
-    </style>
-    <div class="card">
-      <paper-search-bar hide-filter-button="true" placeholder="Enter search term"></paper-search-bar>
-    </div>
-  </template>
-  <script>
-    Polymer({
-      is: 'my-searchbar',
-
-    });
-  </script>
+    <template>
+        <style include="shared-styles">
+             :host {
+                display: block;
+                padding-left: 10px;
+                padding-top: 10px;
+                padding-right: 10px;
+                --input-font-size: 20px;
+            }
+        </style>
+        <div class="card">
+            <paper-search-bar hide-filter-button="true" placeholder="Enter search term" on-paper-search-search="search"></paper-search-bar>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'my-searchbar',
+            search: function() {
+                alert("Searching...");
+            }
+        });
+    </script>
 </dom-module>

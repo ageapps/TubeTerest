@@ -1,22 +1,61 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="./my-youtube-video.html">
 <link rel="import" href="./my-searchbar.html">
+<link rel="import" href="shared-styles.html">
 
 <dom-module id="my-timeline">
     <template>
-        <style>
+        <style include="shared-styles">
              :host {
                 display: block;
             }
 
+            .card {
+                margin: 34px;
+            }
+
+            paper-search-bar {
+                --input-font-size: 20px;
+            }
         </style>
-        <my-searchbar></my-searchbar>
-        <my-youtube-video video-id="g-LlKrFRcUw"></my-youtube-video>
-      
+
+        <div class="card">
+            <paper-search-bar id="searchBar" hide-filter-button="true" placeholder="Enter search term" on-paper-search-search="search"></paper-search-bar>
+        </div>
+
+        <!-- <my-youtube-video video-id="g-LlKrFRcUw" video-title="JUDO" video-description="avaevaewv revservserv ersvservserv servservser vservservser vservserv rsersvservserversvs"></my-youtube-video> -->
+
+        <iron-ajax id="ajax" auto url="https://www.googleapis.com/youtube/v3/search" params$='{"part":"snippet", "q":"{{textSearched}}", "key": "AIzaSyAuecFZ9xJXbGDkQYWBmYrtzOGJD-iDIgI", "type": "video"}' handle-as="json" last-response="{{ajaxResponse}}"></iron-ajax>
+
+        <template is="dom-repeat" items="[[ajaxResponse.items]]">
+            <my-youtube-video video-id="[[item.id.videoId]]" video-description="[[item.snippet.description]]" video-title="[[item.snippet.title]]"></my-youtube-video>
+        </template>
+
     </template>
     <script>
         Polymer({
             is: 'my-timeline',
+            properties: {
+                textSearched: {
+                    type: String,
+                    value: "polymer"
+                }
+            },
+            search: function() {
+                var text = this.$.searchBar.query;
+                if (text) {
+                    console.log(text);
+                    textSearched = text;
+                    this.$.ajax.params = {
+                        "part": "snippet",
+                        "q": text,
+                        "key": "AIzaSyAuecFZ9xJXbGDkQYWBmYrtzOGJD-iDIgI",
+                        "type": "video"
+                    };
+                    this.$.ajax.generateRequest();
+                }
+            }
 
         });
     </script>

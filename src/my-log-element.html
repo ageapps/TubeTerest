@@ -17,35 +17,31 @@
             is: 'my-log-element',
 
             created: function() {
-                var state = (this.localName + '#' + this.id + ' was created');
-                // console.log(state);
-                console.log(state);
+                this.logState(this.localName + '#' + this.id + ' was created');
             },
 
             ready: function() {
-                var state = (this.localName + '#' + this.id + ' has local DOM initialized');
-                // console.log(state);
-                console.log(state);
-                this.$.stateText.textContent = state;
+                this.logState(this.localName + '#' + this.id + ' has local DOM initialized', true);
             },
 
             attached: function() {
-                var state = (this.localName + '#' + this.id + ' was attached');
-                console.log(state);
-                this.$.stateText.textContent = state;
+                this.logState(this.localName + '#' + this.id + ' was attached', true);
             },
 
             detached: function() {
-                var state = (this.localName + '#' + this.id + ' was detached');
-                console.log(state);
-                this.$.stateText.textContent = state;
+                this.logState(this.localName + '#' + this.id + ' was detached', true);
             },
 
             attributeChanged: function(name, type) {
-                var state = (this.localName + '#' + this.id + ' attribute ' + name +
-                    ' was changed to ' + this.getAttribute(name));
+                this.logState(this.localName + '#' + this.id + ' attribute ' + name +
+                    ' was changed to ' + this.getAttribute(name), true);
+
+            },
+            logState: function(state, print) {
+              if (print) {
                 console.log(state);
                 this.$.stateText.textContent = state;
+              }
             }
 
         });

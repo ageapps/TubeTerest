@@ -1,0 +1,56 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="my-listener-icon">
+    <template>
+        <style>
+            /* local styles go here */
+
+             :host {
+                display: inline-block;
+            }
+
+            iron-icon {
+                fill: rgba(0, 0, 0, 0);
+                stroke: currentcolor;
+            }
+
+             :host([pressed]) iron-icon {
+                fill: currentcolor;
+            }
+        </style>
+
+        <!-- local DOM goes here -->
+        <iron-icon icon="[[listenerIcon]]">
+        </iron-icon>
+
+
+    </template>
+    <script>
+        Polymer({
+            is: 'my-listener-icon',
+            properties: {
+                pressed: {
+                    type: Boolean,
+                    value: false,
+                    notify: true,
+                    reflectToAttribute: true
+                },
+                listenerIcon: {
+                    type: String,
+                    value: "star"
+                }
+            },
+            listeners: {
+                'tap': 'toggle',
+                'pressed-changed': 'logState'
+            },
+            toggle: function() {
+                this.pressed = !this.pressed
+            },
+            logState: function() {
+              console.log("State Changed");
+            }
+
+        });
+    </script>
+</dom-module>
