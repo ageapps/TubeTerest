@@ -1,0 +1,36 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/paper-slider/paper-slider.html">
+<link rel="import" href="../bower_components/google-youtube/google-youtube.html">
+<link rel="import" href="../bower_components/paper-search/paper-search-bar.html">
+<link rel="import" href="my-icon-toggle.html">
+<link rel="import" href="my-log-element.html">
+
+<dom-module id="my-new-view">
+    <!-- Defines the element's style and local DOM -->
+    <template>
+        <style>
+             :host {
+                display: block;
+                --icon-toggle-color: lightgrey;
+                --icon-toggle-outline-color: black;
+                --icon-toggle-pressed-color: red;
+                padding: 16px;
+            }
+        </style>
+
+        <h1>New view</h1>
+        <paper-search-bar hide-filter-button="true" placeholder="Enter search term"></paper-search-bar>
+        <paper-slider min="-100" max="100" value="50"></paper-slider>
+        <icon-toggle toggle-icon="star"></icon-toggle>
+        <my-log-element></my-log-element>
+        <google-youtube thumbnail="http://img.youtube.com/vi/M7lc1UVf-VE/0.jpg" video-id="M7lc1UVf-VE" height="270px" width="480px" rel="0" start="5" autoplay="0">
+        </google-youtube>
+    </template>
+    <!-- Creates the element's prototype and registers it -->
+    <script>
+        Polymer({
+            is: 'my-new-view'
+        });
+    </script>
+</dom-module>
