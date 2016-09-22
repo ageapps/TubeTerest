@@ -60,7 +60,7 @@
 
         <div class="card">
             <!-- <div class="circle">1</div> -->
-            <h1 id="title">[[videoTitle]]<span><icon-toggle pressed="{{isFav}}" toggle-icon="favorite"></icon-toggle><span class="likeText" hidden$="{{!isFav}}">Liked!</span></span></h1>
+            <h1 id="title">[[videoTitle]]<span><icon-toggle on-tap="likeVideo" pressed="{{liked}}" toggle-icon="favorite"></icon-toggle><span class="likeText" hidden$="{{!liked}}">Liked!</span></span></h1>
             <div class="flex">
                 <google-youtube class="flex3child" thumbnail="http://img.youtube.com/vi/[[videoId]]/0.jpg" video-id="[[videoId]]" rel="0" autoplay="0"></google-youtube>
                 <p class="flex2child">
@@ -79,8 +79,32 @@
                 },
                 videoTitle: {
                     type: String
+                },
+                liked: {
+                    type: Boolean
                 }
             },
+            likeVideo: function() {
+
+                var favs = [];
+
+                if (localStorage.getItem("favorites")) {
+                    favs = JSON.parse(localStorage.getItem("favorites"));
+                }
+
+                if (!this.liked) {
+                    if (favs.length > 0) {
+                        favs = favs.slice(0, favs.length - 1)
+                        console.log(this.videoTitle + " DELETED");
+                        console.log(favs);
+                    }
+
+                } else {
+                    favs[favs.length] = this.videoId;
+                    console.log(this.videoTitle + " " + this.videoId + +" SAVED");
+                }
+                localStorage.setItem("favorites", JSON.stringify(favs));
+            }
         });
     </script>
 </dom-module>
