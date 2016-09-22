@@ -1,0 +1,23 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="./my-youtube-video.html">
+<link rel="import" href="./my-searchbar.html">
+
+<dom-module id="my-timeline">
+    <template>
+        <style>
+             :host {
+                display: block;
+            }
+
+        </style>
+        <my-searchbar></my-searchbar>
+        <my-youtube-video video-id="g-LlKrFRcUw"></my-youtube-video>
+      
+    </template>
+    <script>
+        Polymer({
+            is: 'my-timeline',
+
+        });
+    </script>
+</dom-module>
