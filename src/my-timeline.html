@@ -26,10 +26,11 @@
 
         <!-- <my-youtube-video video-id="g-LlKrFRcUw" video-title="JUDO" video-description="avaevaewv revservserv ersvservserv servservser vservservser vservserv rsersvservserversvs"></my-youtube-video> -->
 
-        <iron-ajax id="ajax" auto url="https://www.googleapis.com/youtube/v3/search" params$='{"part":"snippet", "q":"{{textSearched}}", "key": "AIzaSyAuecFZ9xJXbGDkQYWBmYrtzOGJD-iDIgI", "type": "video"}' handle-as="json" last-response="{{ajaxResponse}}"></iron-ajax>
+        <!-- <iron-ajax id="ajax" auto url="https://www.googleapis.com/youtube/v3/search" params$='{"part":"snippet", "q":"{{textSearched}}", "key": "AIzaSyAuecFZ9xJXbGDkQYWBmYrtzOGJD-iDIgI", "type": "video"}' handle-as="json" last-response="{{ajaxResponse}}"></iron-ajax> -->
+        <iron-ajax id="ajax" auto url="https://www.googleapis.com/youtube/v3/search" params$='{"part":"snippet", "q":"{{textSearched}}", "key": "AIzaSyAuecFZ9xJXbGDkQYWBmYrtzOGJD-iDIgI", "type": "video"}' handle-as="json" on-response="hresponse" debounce-duration="300"></iron-ajax>
 
-        <template is="dom-repeat" items="[[ajaxResponse.items]]">
-            <my-youtube-video video-id="[[item.id.videoId]]" video-description="[[item.snippet.description]]" video-title="[[item.snippet.title]]"></my-youtube-video>
+        <template is="dom-repeat" items="{{videoItems}}" as="item">
+            <my-youtube-video liked="{{item.isFav}}" video-id="{{item.id.videoId}}" video-description="{{item.snippet.description}}" video-title="{{item.snippet.title}}"></my-youtube-video>
         </template>
 
     </template>
@@ -41,6 +42,12 @@
                     type: String,
                     value: "polymer"
                 }
+            },
+            ready: function() {
+                this.videoItems = [];
+                this.storedFavs = [];
+                this.storedFavs = JSON.parse(localStorage.getItem("favorites"));
+                console.log("storedFavs: " + this.storedFavs);
             },
             search: function() {
                 var text = this.$.searchBar.query;
@@ -55,7 +62,41 @@
                     };
                     this.$.ajax.generateRequest();
                 }
+            },
+            hresponse: function(request) {
+                var ids = [];
+                var items = request.detail.response.items;
+                if (this.storedFavs && this.storedFavs.length) {
+                    for (var i = 0; i < request.detail.response.items.length; i++) {
+                        ids.push(request.detail.response.items[i].id.videoId);
+                        console.log(ids);
+                    }
+
+                    for (var i = 0; i < ids.length; i++) {
+                        if (this.storedFavs.indexOf(ids[i]) >= 0) {
+                            console.log("fav");
+                            items[i].isFav = true;
+                        } else {
+                            console.log("no fav");
+                            items[i].isFav = false;
+                        }
+                        this.push('videoItems', items[i]);
+                        console.log(items[i].id.videoId);
+                    }
+                } else {
+                    for (var i = 0; i < items.length; i++) {
+                        items[i].isFav = false;
+                        this.push('videoItems', items[i]);
+                        console.log(items[i].id.videoId);
+                    }
+                }
+
+
+
+                // console.log(this.videoItems[this.videoItems.length - 1].snippet.description);
+                // console.log(this.videoItems[this.videoItems.length - 1].snippet.title);
             }
+
 
         });
     </script>

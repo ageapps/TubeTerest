@@ -80,9 +80,15 @@
                 videoTitle: {
                     type: String
                 },
+                videoDescription: {
+                    type: String
+                },
                 liked: {
                     type: Boolean
                 }
+            },
+            ready: function() {
+                console.log(this.videoId + " " + this.videoTitle + " " + this.videoDescription);
             },
             likeVideo: function() {
 
@@ -94,7 +100,10 @@
 
                 if (!this.liked) {
                     if (favs.length > 0) {
-                        favs = favs.slice(0, favs.length - 1)
+                        console.log(favs.indexOf(this.videoId));
+                        console.log(favs);
+
+                        favs.splice(favs.indexOf(this.videoId), 1);
                         console.log(this.videoTitle + " DELETED");
                         console.log(favs);
                     }

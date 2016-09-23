@@ -19,16 +19,12 @@
                 --input-font-size: 20px;
             }
         </style>
-        <!-- <my-youtube-video video-id="g-LlKrFRcUw" video-title="JUDO" video-description="avaevaewv revservserv ersvservserv servservser vservservser vservserv rsersvservserversvs"></my-youtube-video> -->
-        <template is="dom-repeat" id="videosList" items="{{storedFavs}}">
-            <iron-ajax id="ajax" auto url="https://www.googleapis.com/youtube/v3/search" params$='{"part":"snippet", "q":"{{item}}", "key": "AIzaSyAuecFZ9xJXbGDkQYWBmYrtzOGJD-iDIgI", "type": "video"}' handle-as="json" last-response="{{ajaxResponse}}"></iron-ajax>
-            <!-- <iron-ajax id="ajax" url="" handle-as="json" on-response="hresponse" debounce-duration="300">
-        </iron-ajax> -->
-            <template is="dom-repeat" id="videosList" items="{{videoItems.items}}">
-                <my-youtube-video liked video-id="[[item.id.videoId]]" video-description="[[item.snippet.description]]" video-title="[[item.snippet.title]]"></my-youtube-video>
-            </template>
-        </template>
 
+        <iron-ajax id="ajax" url="" handle-as="json" on-response="hresponse" debounce-duration="300"></iron-ajax>
+        <template is="dom-repeat" id="videosList" items="{{videoFavItems}}" as="video">
+            <my-youtube-video liked video-id$="{{video.id.videoId}}" video-description$="{{video.snippet.description}}" video-title$="{{video.snippet.title}}"></my-youtube-video>
+        </template>
+        <!-- </template> -->
     </template>
     <script>
         Polymer({
@@ -40,29 +36,30 @@
                 }
             },
             ready: function() {
-                this.videoItems = [];
+                this.videoFavItems = [];
                 this.storedFavs = JSON.parse(localStorage.getItem("favorites"));
                 console.log(this.storedFavs);
-                this.$.videosList.render();
-                // console.log(this.$.ajax);
-                // for (var i = 0; i < this.storedFavs.length; i++) {
-                //     this.$.ajax.url = "https://www.googleapis.com/youtube/v3/search";
-                //     this.$.ajax.params = {
-                //         "part": "snippet",
-                //         "q": this.storedFavs[i],
-                //         "key": "AIzaSyAuecFZ9xJXbGDkQYWBmYrtzOGJD-iDIgI",
-                //         "type": "video"
-                //     };
-                //     this.$.ajax.generateRequest();
-                // }
+                //this.$.videosList.render();
+                console.log(this.$.ajax);
+                for (var i = 0; i < this.storedFavs.length; i++) {
+                    this.$.ajax.url = "https://www.googleapis.com/youtube/v3/search";
+                    this.$.ajax.params = {
+                        "part": "snippet",
+                        "q": this.storedFavs[i],
+                        "key": "AIzaSyAuecFZ9xJXbGDkQYWBmYrtzOGJD-iDIgI",
+                        "type": "video"
+                    };
+                    this.$.ajax.generateRequest();
+                }
 
-                // this.$.ajax.generateRequest();
+                //this.$.ajax.generateRequest();
             },
-            // hresponse: function(request) {
-            //     this.videoItems.push(request.detail.response);
-            //     console.log(request.detail.response.items[0].id.videoId);
-            //     this.$.videosList.render();
-            // }
+            hresponse: function(request) {
+                this.push('videoFavItems', request.detail.response.items[0]);
+                console.log(this.videoFavItems[this.videoFavItems.length - 1].id.videoId);
+                // console.log(this.videoItems[this.videoItems.length - 1].snippet.description);
+                // console.log(this.videoItems[this.videoItems.length - 1].snippet.title);
+            }
 
         });
     </script>
