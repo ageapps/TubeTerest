@@ -24,7 +24,7 @@
         <template is="dom-repeat" id="videosList" items="{{videoFavItems}}" as="video">
             <my-youtube-video liked video-id$="{{video.id.videoId}}" video-description$="{{video.snippet.description}}" video-title$="{{video.snippet.title}}"></my-youtube-video>
         </template>
-        <!-- </template> -->
+
     </template>
     <script>
         Polymer({
@@ -51,14 +51,10 @@
                     };
                     this.$.ajax.generateRequest();
                 }
-
-                //this.$.ajax.generateRequest();
             },
             hresponse: function(request) {
                 this.push('videoFavItems', request.detail.response.items[0]);
                 console.log(this.videoFavItems[this.videoFavItems.length - 1].id.videoId);
-                // console.log(this.videoItems[this.videoItems.length - 1].snippet.description);
-                // console.log(this.videoItems[this.videoItems.length - 1].snippet.title);
             }
 
         });

@@ -51,9 +51,9 @@
             },
             search: function() {
                 var text = this.$.searchBar.query;
+                this.videoItems = [];
                 if (text) {
                     console.log(text);
-                    textSearched = text;
                     this.$.ajax.params = {
                         "part": "snippet",
                         "q": text,
@@ -64,16 +64,16 @@
                 }
             },
             hresponse: function(request) {
-                var ids = [];
+                //var ids = [];
                 var items = request.detail.response.items;
                 if (this.storedFavs && this.storedFavs.length) {
-                    for (var i = 0; i < request.detail.response.items.length; i++) {
-                        ids.push(request.detail.response.items[i].id.videoId);
-                        console.log(ids);
-                    }
+                    // for (var i = 0; i < items.length; i++) {
+                    //     ids.push(items[i].id.videoId);
+                    //     console.log(ids);
+                    // }
 
-                    for (var i = 0; i < ids.length; i++) {
-                        if (this.storedFavs.indexOf(ids[i]) >= 0) {
+                    for (var i = 0; i < items.length; i++) {
+                        if (this.storedFavs.indexOf(items[i].id.videoId) >= 0) {
                             console.log("fav");
                             items[i].isFav = true;
                         } else {

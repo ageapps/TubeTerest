@@ -59,7 +59,7 @@
         </style>
 
         <div class="card">
-            <!-- <div class="circle">1</div> -->
+
             <h1 id="title">[[videoTitle]]<span><icon-toggle on-tap="likeVideo" pressed="{{liked}}" toggle-icon="favorite"></icon-toggle><span class="likeText" hidden$="{{!liked}}">Liked!</span></span></h1>
             <div class="flex">
                 <google-youtube class="flex3child" thumbnail="http://img.youtube.com/vi/[[videoId]]/0.jpg" video-id="[[videoId]]" rel="0" autoplay="0"></google-youtube>
@@ -96,13 +96,11 @@
 
                 if (localStorage.getItem("favorites")) {
                     favs = JSON.parse(localStorage.getItem("favorites"));
+                    console.log(favs);
                 }
 
                 if (!this.liked) {
                     if (favs.length > 0) {
-                        console.log(favs.indexOf(this.videoId));
-                        console.log(favs);
-
                         favs.splice(favs.indexOf(this.videoId), 1);
                         console.log(this.videoTitle + " DELETED");
                         console.log(favs);
