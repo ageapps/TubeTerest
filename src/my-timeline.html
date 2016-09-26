@@ -53,14 +53,15 @@
                 var text = this.$.searchBar.query;
                 this.videoItems = [];
                 if (text) {
-                    console.log(text);
-                    this.$.ajax.params = {
-                        "part": "snippet",
-                        "q": text,
-                        "key": "AIzaSyAuecFZ9xJXbGDkQYWBmYrtzOGJD-iDIgI",
-                        "type": "video"
-                    };
-                    this.$.ajax.generateRequest();
+                    this.textSearched = text;
+                    // console.log(text);
+                    // this.$.ajax.params = {
+                    //     "part": "snippet",
+                    //     "q": text,
+                    //     "key": "AIzaSyAuecFZ9xJXbGDkQYWBmYrtzOGJD-iDIgI",
+                    //     "type": "video"
+                    // };
+                    // this.$.ajax.generateRequest();
                 }
             },
             hresponse: function(request) {
