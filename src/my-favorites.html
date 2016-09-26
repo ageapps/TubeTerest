@@ -3,6 +3,8 @@
 <link rel="import" href="./my-youtube-video.html">
 <link rel="import" href="./my-searchbar.html">
 <link rel="import" href="shared-styles.html">
+<link rel="import" href="./language-behavior.html">
+<link rel="import" href="./my-noresult-view.html">
 
 <dom-module id="my-favorites">
     <template>
@@ -20,43 +22,115 @@
             }
         </style>
 
-        <iron-ajax id="ajax" url="" handle-as="json" on-response="hresponse" debounce-duration="300"></iron-ajax>
+        <my-noresult-view text="{{localize('message_no_favs')}}" loading="[[loading]]" empty="[[empty]]"></my-noresult-view>
+
+        <iron-ajax id="ajax" url="" handle-as="json" on-response="hresponse"></iron-ajax>
         <template is="dom-repeat" id="videosList" items="{{videoFavItems}}" as="video">
-            <my-youtube-video liked video-id$="{{video.id.videoId}}" video-description$="{{video.snippet.description}}" video-title$="{{video.snippet.title}}"></my-youtube-video>
+            <my-youtube-video language="{{language}}" stored-favs="{{storedFavs}}" liked video-id="{{video.id.videoId}}" video-description="{{video.snippet.description}}" video-title="{{video.snippet.title}}"></my-youtube-video>
         </template>
 
     </template>
     <script>
         Polymer({
             is: 'my-favorites',
+            behaviors: [
+                LanguageBehavior
+            ],
             properties: {
-                textSearched: {
+                empty: {
                     type: String,
-                    value: "polymer"
-                }
+                    value: false
+                },
+                language: {
+                    value: 'en',
+                    type: String
+                },
+                storedFavs: {
+                    type: Array,
+                    notify: true,
+                    value: function() {
+                        return [];
+                    }
+                },
+                loading: {
+                    type: Boolean,
+                    value: true
+                },
             },
+            observers: [
+                'favsChanged(storedFavs.splices)'
+            ],
             ready: function() {
                 this.videoFavItems = [];
-                this.storedFavs = JSON.parse(localStorage.getItem("favorites"));
-                console.log(this.storedFavs);
-                //this.$.videosList.render();
-                console.log(this.$.ajax);
-                for (var i = 0; i < this.storedFavs.length; i++) {
+
+                if (!this.storedFavs || !this.storedFavs.length) {
+                    this.empty = true;
+                    this.loading = false;
+                    return;
+                }
+
+                this.requestFavs(this.storedFavs);
+            },
+            hresponse: function(request) {
+                var requestedItem = request.detail.response.items[0];
+                if (!this.videoFavItems.includes(requestedItem)) {
+                    this.push('videoFavItems', requestedItem);
+                    console.log(this.videoFavItems[this.videoFavItems.length - 1].id.videoId);
+                }
+                this.loading = false;
+            },
+
+            favsChanged: function(changeRecord) {
+                this.empty = false;
+                console.log("FAVS: faves changed " + changeRecord);
+
+                if (changeRecord) {
+                    changeRecord.indexSplices.forEach(function(s) {
+                        s.removed.forEach(function(favRemovedId) {
+                            this.removeFav(favRemovedId);
+                        }, this);
+
+                        for (var i = 0; i < s.addedCount; i++) {
+                            var index = s.index + i;
+                            var newId = [s.object[index].toString()];
+                            console.log('Video ' + newId + ' ADDED');
+
+                            this.requestFavs(newId)
+                        }
+                    }, this);
+                }
+
+            },
+
+            removeFav: function(favRemovedId) {
+                for (var i = 0; i < this.videoFavItems.length; i++) {
+                    if (this.videoFavItems[i].id.videoId === favRemovedId) {
+                        this.splice('videoFavItems', i, 1);
+                        console.log(favRemovedId + " REMOVED");
+                    }
+                }
+                if (!this.storedFavs || !this.storedFavs.length) {
+                    this.empty = true;
+                }
+            },
+            requestFavs: function(requestedIds) {
+                console.log("requestFavs");
+
+                for (var i = 0; i < requestedIds.length; i++) {
                     this.$.ajax.url = "https://www.googleapis.com/youtube/v3/search";
                     this.$.ajax.params = {
                         "part": "snippet",
-                        "q": this.storedFavs[i],
+                        "q": requestedIds[i],
                         "key": "AIzaSyAuecFZ9xJXbGDkQYWBmYrtzOGJD-iDIgI",
                         "type": "video"
                     };
                     this.$.ajax.generateRequest();
                 }
-            },
-            hresponse: function(request) {
-                this.push('videoFavItems', request.detail.response.items[0]);
-                console.log(this.videoFavItems[this.videoFavItems.length - 1].id.videoId);
-            }
 
+            },
+            attached: function() {
+                this.loadResources(this.resolveUrl('locales.json'));
+            },
         });
     </script>
 </dom-module>

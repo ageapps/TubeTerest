@@ -1,180 +1,6 @@
 <html><head><meta charset="UTF-8"><link rel="import" href="my-app.html"></head><body><div hidden="" by-vulcanize=""><script>Polymer.IronFormElementBehavior={properties:{name:{type:String},value:{notify:!0,type:String},required:{type:Boolean,value:!1},_parentForm:{type:Object}},attached:function(){this.fire("iron-form-element-register")},detached:function(){this._parentForm&&this._parentForm.fire("iron-form-element-unregister",{target:this})}};</script>
 <script>Polymer.IronRangeBehavior={properties:{value:{type:Number,value:0,notify:!0,reflectToAttribute:!0},min:{type:Number,value:0,notify:!0},max:{type:Number,value:100,notify:!0},step:{type:Number,value:1,notify:!0},ratio:{type:Number,value:0,readOnly:!0,notify:!0}},observers:["_update(value, min, max, step)"],_calcRatio:function(t){return(this._clampValue(t)-this.min)/(this.max-this.min)},_clampValue:function(t){return Math.min(this.max,Math.max(this.min,this._calcStep(t)))},_calcStep:function(t){if(t=parseFloat(t),!this.step)return t;var e=Math.round((t-this.min)/this.step);return this.step<1?e/(1/this.step)+this.min:e*this.step+this.min},_validateValue:function(){var t=this._clampValue(this.value);return this.value=this.oldValue=isNaN(t)?this.oldValue:t,this.value!==t},_update:function(){this._validateValue(),this._setRatio(100*this._calcRatio(this.value))}};</script>
-<dom-module id="iron-a11y-announcer" assetpath="../bower_components/iron-a11y-announcer/">
-  <template>
-    <style>
-      :host {
-        display: inline-block;
-        position: fixed;
-        clip: rect(0px,0px,0px,0px);
-      }
-    </style>
-    <div aria-live$="[[mode]]">[[_text]]</div>
-  </template>
-
-  <script>!function(){"use strict";Polymer.IronA11yAnnouncer=Polymer({is:"iron-a11y-announcer",properties:{mode:{type:String,value:"polite"},_text:{type:String,value:""}},created:function(){Polymer.IronA11yAnnouncer.instance||(Polymer.IronA11yAnnouncer.instance=this),document.body.addEventListener("iron-announce",this._onIronAnnounce.bind(this))},announce:function(n){this._text="",this.async(function(){this._text=n},100)},_onIronAnnounce:function(n){n.detail&&n.detail.text&&this.announce(n.detail.text)}}),Polymer.IronA11yAnnouncer.instance=null,Polymer.IronA11yAnnouncer.requestAvailability=function(){Polymer.IronA11yAnnouncer.instance||(Polymer.IronA11yAnnouncer.instance=document.createElement("iron-a11y-announcer")),document.body.appendChild(Polymer.IronA11yAnnouncer.instance)}}();</script>
-</dom-module>
-<script>Polymer.IronValidatableBehaviorMeta=null,Polymer.IronValidatableBehavior={properties:{validator:{type:String},invalid:{notify:!0,reflectToAttribute:!0,type:Boolean,value:!1},_validatorMeta:{type:Object},validatorType:{type:String,value:"validator"},_validator:{type:Object,computed:"__computeValidator(validator)"}},observers:["_invalidChanged(invalid)"],registered:function(){Polymer.IronValidatableBehaviorMeta=new Polymer.IronMeta({type:"validator"})},_invalidChanged:function(){this.invalid?this.setAttribute("aria-invalid","true"):this.removeAttribute("aria-invalid")},hasValidator:function(){return null!=this._validator},validate:function(a){return this.invalid=!this._getValidity(a),!this.invalid},_getValidity:function(a){return!this.hasValidator()||this._validator.validate(a)},__computeValidator:function(){return Polymer.IronValidatableBehaviorMeta&&Polymer.IronValidatableBehaviorMeta.byKey(this.validator)}};</script>
-<script>Polymer({is:"iron-input",extends:"input",behaviors:[Polymer.IronValidatableBehavior],properties:{bindValue:{observer:"_bindValueChanged",type:String},preventInvalidInput:{type:Boolean},allowedPattern:{type:String,observer:"_allowedPatternChanged"},_previousValidInput:{type:String,value:""},_patternAlreadyChecked:{type:Boolean,value:!1}},listeners:{input:"_onInput",keypress:"_onKeypress"},registered:function(){this._canDispatchEventOnDisabled()||(this._origDispatchEvent=this.dispatchEvent,this.dispatchEvent=this._dispatchEventFirefoxIE)},created:function(){Polymer.IronA11yAnnouncer.requestAvailability()},_canDispatchEventOnDisabled:function(){var e=document.createElement("input"),t=!1;e.disabled=!0,e.addEventListener("feature-check-dispatch-event",function(){t=!0});try{e.dispatchEvent(new Event("feature-check-dispatch-event"))}catch(e){}return t},_dispatchEventFirefoxIE:function(){var e=this.disabled;this.disabled=!1,this._origDispatchEvent.apply(this,arguments),this.disabled=e},get _patternRegExp(){var e;if(this.allowedPattern)e=new RegExp(this.allowedPattern);else switch(this.type){case"number":e=/[0-9.,e-]/}return e},ready:function(){this.bindValue=this.value},_bindValueChanged:function(){this.value!==this.bindValue&&(this.value=this.bindValue||0===this.bindValue||this.bindValue===!1?this.bindValue:""),this.fire("bind-value-changed",{value:this.bindValue})},_allowedPatternChanged:function(){this.preventInvalidInput=!!this.allowedPattern},_onInput:function(){if(this.preventInvalidInput&&!this._patternAlreadyChecked){var e=this._checkPatternValidity();e||(this._announceInvalidCharacter("Invalid string of characters not entered."),this.value=this._previousValidInput)}this.bindValue=this.value,this._previousValidInput=this.value,this._patternAlreadyChecked=!1},_isPrintable:function(e){var t=8==e.keyCode||9==e.keyCode||13==e.keyCode||27==e.keyCode,i=19==e.keyCode||20==e.keyCode||45==e.keyCode||46==e.keyCode||144==e.keyCode||145==e.keyCode||e.keyCode>32&&e.keyCode<41||e.keyCode>111&&e.keyCode<124;return!(t||0==e.charCode&&i)},_onKeypress:function(e){if(this.preventInvalidInput||"number"===this.type){var t=this._patternRegExp;if(t&&!(e.metaKey||e.ctrlKey||e.altKey)){this._patternAlreadyChecked=!0;var i=String.fromCharCode(e.charCode);this._isPrintable(e)&&!t.test(i)&&(e.preventDefault(),this._announceInvalidCharacter("Invalid character "+i+" not entered."))}}},_checkPatternValidity:function(){var e=this._patternRegExp;if(!e)return!0;for(var t=0;t<this.value.length;t++)if(!e.test(this.value[t]))return!1;return!0},validate:function(){var e=this.checkValidity();return e&&(this.required&&""===this.value?e=!1:this.hasValidator()&&(e=Polymer.IronValidatableBehavior.validate.call(this,this.value))),this.invalid=!e,this.fire("iron-input-validate"),e},_announceInvalidCharacter:function(e){this.fire("iron-announce",{text:e})}});</script>
 <script>Polymer.PaperInputHelper={},Polymer.PaperInputHelper.NextLabelID=1,Polymer.PaperInputHelper.NextAddonID=1,Polymer.PaperInputBehaviorImpl={properties:{label:{type:String},value:{notify:!0,type:String},disabled:{type:Boolean,value:!1},invalid:{type:Boolean,value:!1,notify:!0},preventInvalidInput:{type:Boolean},allowedPattern:{type:String},type:{type:String},list:{type:String},pattern:{type:String},required:{type:Boolean,value:!1},errorMessage:{type:String},charCounter:{type:Boolean,value:!1},noLabelFloat:{type:Boolean,value:!1},alwaysFloatLabel:{type:Boolean,value:!1},autoValidate:{type:Boolean,value:!1},validator:{type:String},autocomplete:{type:String,value:"off"},autofocus:{type:Boolean,observer:"_autofocusChanged"},inputmode:{type:String},minlength:{type:Number},maxlength:{type:Number},min:{type:String},max:{type:String},step:{type:String},name:{type:String},placeholder:{type:String,value:""},readonly:{type:Boolean,value:!1},size:{type:Number},autocapitalize:{type:String,value:"none"},autocorrect:{type:String,value:"off"},autosave:{type:String},results:{type:Number},accept:{type:String},multiple:{type:Boolean},_ariaDescribedBy:{type:String,value:""},_ariaLabelledBy:{type:String,value:""}},listeners:{"addon-attached":"_onAddonAttached"},keyBindings:{"shift+tab:keydown":"_onShiftTabDown"},hostAttributes:{tabindex:0},get inputElement(){return this.$.input},get _focusableElement(){return this.inputElement},registered:function(){this._typesThatHaveText=["date","datetime","datetime-local","month","time","week","file"]},attached:function(){this._updateAriaLabelledBy(),this.inputElement&&this._typesThatHaveText.indexOf(this.inputElement.type)!==-1&&(this.alwaysFloatLabel=!0)},_appendStringWithSpace:function(e,t){return e=e?e+" "+t:t},_onAddonAttached:function(e){var t=e.path?e.path[0]:e.target;if(t.id)this._ariaDescribedBy=this._appendStringWithSpace(this._ariaDescribedBy,t.id);else{var a="paper-input-add-on-"+Polymer.PaperInputHelper.NextAddonID++;t.id=a,this._ariaDescribedBy=this._appendStringWithSpace(this._ariaDescribedBy,a)}},validate:function(){return this.inputElement.validate()},_focusBlurHandler:function(e){Polymer.IronControlState._focusBlurHandler.call(this,e),this.focused&&!this._shiftTabPressed&&this._focusableElement.focus()},_onShiftTabDown:function(e){var t=this.getAttribute("tabindex");this._shiftTabPressed=!0,this.setAttribute("tabindex","-1"),this.async(function(){this.setAttribute("tabindex",t),this._shiftTabPressed=!1},1)},_handleAutoValidate:function(){this.autoValidate&&this.validate()},updateValueAndPreserveCaret:function(e){try{var t=this.inputElement.selectionStart;this.value=e,this.inputElement.selectionStart=t,this.inputElement.selectionEnd=t}catch(t){this.value=e}},_computeAlwaysFloatLabel:function(e,t){return t||e},_updateAriaLabelledBy:function(){var e=Polymer.dom(this.root).querySelector("label");if(!e)return void(this._ariaLabelledBy="");var t;e.id?t=e.id:(t="paper-input-label-"+Polymer.PaperInputHelper.NextLabelID++,e.id=t),this._ariaLabelledBy=t},_onChange:function(e){this.shadowRoot&&this.fire(e.type,{sourceEvent:e},{node:this,bubbles:e.bubbles,cancelable:e.cancelable})},_autofocusChanged:function(){if(this.autofocus&&this._focusableElement){var e=document.activeElement,t=e instanceof HTMLElement,a=t&&e!==document.body&&e!==document.documentElement;a||this._focusableElement.focus()}}},Polymer.PaperInputBehavior=[Polymer.IronControlState,Polymer.IronA11yKeysBehavior,Polymer.PaperInputBehaviorImpl];</script>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700">
-<style is="custom-style">
-
-  :root {
-
-    /* Shared Styles */
-    --paper-font-common-base: {
-      font-family: 'Roboto', 'Noto', sans-serif;
-      -webkit-font-smoothing: antialiased;
-    };
-
-    --paper-font-common-code: {
-      font-family: 'Roboto Mono', 'Consolas', 'Menlo', monospace;
-      -webkit-font-smoothing: antialiased;
-    };
-
-    --paper-font-common-expensive-kerning: {
-      text-rendering: optimizeLegibility;
-    };
-
-    --paper-font-common-nowrap: {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    };
-
-    /* Material Font Styles */
-
-    --paper-font-display4: {
-      @apply(--paper-font-common-base);
-      @apply(--paper-font-common-nowrap);
-
-      font-size: 112px;
-      font-weight: 300;
-      letter-spacing: -.044em;
-      line-height: 120px;
-    };
-
-    --paper-font-display3: {
-      @apply(--paper-font-common-base);
-      @apply(--paper-font-common-nowrap);
-
-      font-size: 56px;
-      font-weight: 400;
-      letter-spacing: -.026em;
-      line-height: 60px;
-    };
-
-    --paper-font-display2: {
-      @apply(--paper-font-common-base);
-
-      font-size: 45px;
-      font-weight: 400;
-      letter-spacing: -.018em;
-      line-height: 48px;
-    };
-
-    --paper-font-display1: {
-      @apply(--paper-font-common-base);
-
-      font-size: 34px;
-      font-weight: 400;
-      letter-spacing: -.01em;
-      line-height: 40px;
-    };
-
-    --paper-font-headline: {
-      @apply(--paper-font-common-base);
-
-      font-size: 24px;
-      font-weight: 400;
-      letter-spacing: -.012em;
-      line-height: 32px;
-    };
-
-    --paper-font-title: {
-      @apply(--paper-font-common-base);
-      @apply(--paper-font-common-nowrap);
-
-      font-size: 20px;
-      font-weight: 500;
-      line-height: 28px;
-    };
-
-    --paper-font-subhead: {
-      @apply(--paper-font-common-base);
-
-      font-size: 16px;
-      font-weight: 400;
-      line-height: 24px;
-    };
-
-    --paper-font-body2: {
-      @apply(--paper-font-common-base);
-
-      font-size: 14px;
-      font-weight: 500;
-      line-height: 24px;
-    };
-
-    --paper-font-body1: {
-      @apply(--paper-font-common-base);
-
-      font-size: 14px;
-      font-weight: 400;
-      line-height: 20px;
-    };
-
-    --paper-font-caption: {
-      @apply(--paper-font-common-base);
-      @apply(--paper-font-common-nowrap);
-
-      font-size: 12px;
-      font-weight: 400;
-      letter-spacing: 0.011em;
-      line-height: 20px;
-    };
-
-    --paper-font-menu: {
-      @apply(--paper-font-common-base);
-      @apply(--paper-font-common-nowrap);
-
-      font-size: 13px;
-      font-weight: 500;
-      line-height: 24px;
-    };
-
-    --paper-font-button: {
-      @apply(--paper-font-common-base);
-      @apply(--paper-font-common-nowrap);
-
-      font-size: 14px;
-      font-weight: 500;
-      letter-spacing: 0.018em;
-      line-height: 24px;
-      text-transform: uppercase;
-    };
-
-    --paper-font-code2: {
-      @apply(--paper-font-common-code);
-
-      font-size: 14px;
-      font-weight: 700;
-      line-height: 20px;
-    };
-
-    --paper-font-code1: {
-      @apply(--paper-font-common-code);
-
-      font-size: 14px;
-      font-weight: 500;
-      line-height: 20px;
-    };
-
-  }
-
-</style>
 <script>Polymer.PaperInputAddonBehavior={hostAttributes:{"add-on":""},attached:function(){this.fire("addon-attached")},update:function(t){}};</script>
 <dom-module id="paper-input-char-counter" assetpath="../bower_components/paper-input/">
   <template>
@@ -958,21 +784,73 @@
 
   <script>Polymer({is:"paper-slider",behaviors:[Polymer.IronA11yKeysBehavior,Polymer.IronFormElementBehavior,Polymer.PaperInkyFocusBehavior,Polymer.IronRangeBehavior],properties:{snaps:{type:Boolean,value:!1,notify:!0},pin:{type:Boolean,value:!1,notify:!0},secondaryProgress:{type:Number,value:0,notify:!0,observer:"_secondaryProgressChanged"},editable:{type:Boolean,value:!1},immediateValue:{type:Number,value:0,readOnly:!0,notify:!0},maxMarkers:{type:Number,value:0,notify:!0},expand:{type:Boolean,value:!1,readOnly:!0},dragging:{type:Boolean,value:!1,readOnly:!0},transiting:{type:Boolean,value:!1,readOnly:!0},markers:{type:Array,readOnly:!0,value:[]}},observers:["_updateKnob(value, min, max, snaps, step)","_valueChanged(value)","_immediateValueChanged(immediateValue)","_updateMarkers(maxMarkers, min, max, snaps)"],hostAttributes:{role:"slider",tabindex:0},keyBindings:{"left down pagedown home":"_decrementKey","right up pageup end":"_incrementKey"},increment:function(){this.value=this._clampValue(this.value+this.step)},decrement:function(){this.value=this._clampValue(this.value-this.step)},_updateKnob:function(t,e,i,s,a){this.setAttribute("aria-valuemin",e),this.setAttribute("aria-valuemax",i),this.setAttribute("aria-valuenow",t),this._positionKnob(this._calcRatio(t))},_valueChanged:function(){this.fire("value-change")},_immediateValueChanged:function(){this.dragging?this.fire("immediate-value-change"):this.value=this.immediateValue},_secondaryProgressChanged:function(){this.secondaryProgress=this._clampValue(this.secondaryProgress)},_expandKnob:function(){this._setExpand(!0)},_resetKnob:function(){this.cancelDebouncer("expandKnob"),this._setExpand(!1)},_positionKnob:function(t){this._setImmediateValue(this._calcStep(this._calcKnobPosition(t))),this._setRatio(this._calcRatio(this.immediateValue)),this.$.sliderKnob.style.left=100*this.ratio+"%",this.dragging&&(this._knobstartx=this.ratio*this._w,this.translate3d(0,0,0,this.$.sliderKnob))},_calcKnobPosition:function(t){return(this.max-this.min)*t+this.min},_onTrack:function(t){switch(t.stopPropagation(),t.detail.state){case"start":this._trackStart(t);break;case"track":this._trackX(t);break;case"end":this._trackEnd()}},_trackStart:function(t){this._w=this.$.sliderBar.offsetWidth,this._x=this.ratio*this._w,this._startx=this._x,this._knobstartx=this._startx,this._minx=-this._startx,this._maxx=this._w-this._startx,this.$.sliderKnob.classList.add("dragging"),this._setDragging(!0)},_trackX:function(t){this.dragging||this._trackStart(t);var e=Math.min(this._maxx,Math.max(this._minx,t.detail.dx));this._x=this._startx+e;var i=this._calcStep(this._calcKnobPosition(this._x/this._w));this._setImmediateValue(i);var s=this._calcRatio(this.immediateValue)*this._w-this._knobstartx;this.translate3d(s+"px",0,0,this.$.sliderKnob)},_trackEnd:function(){var t=this.$.sliderKnob.style;this.$.sliderKnob.classList.remove("dragging"),this._setDragging(!1),this._resetKnob(),this.value=this.immediateValue,t.transform=t.webkitTransform="",this.fire("change")},_knobdown:function(t){this._expandKnob(),t.preventDefault(),this.focus()},_bardown:function(t){this._w=this.$.sliderBar.offsetWidth;var e=this.$.sliderBar.getBoundingClientRect(),i=(t.detail.x-e.left)/this._w,s=this.ratio;this._setTransiting(!0),this._positionKnob(i),this.debounce("expandKnob",this._expandKnob,60),s===this.ratio&&this._setTransiting(!1),this.async(function(){this.fire("change")}),t.preventDefault(),this.focus()},_knobTransitionEnd:function(t){t.target===this.$.sliderKnob&&this._setTransiting(!1)},_updateMarkers:function(t,e,i,s){s||this._setMarkers([]);var a=Math.round((i-e)/this.step);a>t&&(a=t),this._setMarkers(new Array(a))},_mergeClasses:function(t){return Object.keys(t).filter(function(e){return t[e]}).join(" ")},_getClassNames:function(){return this._mergeClasses({disabled:this.disabled,pin:this.pin,snaps:this.snaps,ring:this.immediateValue<=this.min,expand:this.expand,dragging:this.dragging,transiting:this.transiting,editable:this.editable})},_incrementKey:function(t){this.disabled||("end"===t.detail.key?this.value=this.max:this.increment(),this.fire("change"))},_decrementKey:function(t){this.disabled||("home"===t.detail.key?this.value=this.min:this.decrement(),this.fire("change"))},_changeValue:function(t){this.value=t.target.value,this.fire("change")},_inputKeyDown:function(t){t.stopPropagation()},_createRipple:function(){return this._rippleContainer=this.$.sliderKnob,Polymer.PaperInkyFocusBehaviorImpl._createRipple.call(this)},_focusedChanged:function(t){t&&this.ensureRipple(),this.hasRipple()&&(t?this._ripple.style.display="":this._ripple.style.display="none",this._ripple.holdDown=t)}});</script>
 </dom-module>
+<dom-module id="my-log-element" assetpath="/">
+    <template>
+        <style>
+             :host {
+                display: block;
+            }
+        </style>
+
+        <h1>Log element</h1>
+        <span id="stateText"></span>!
+    </template>
+    <script>MyLogElement=Polymer({is:"my-log-element",created:function(){this.logState(this.localName+"#"+this.id+" was created")},ready:function(){this.logState(this.localName+"#"+this.id+" has local DOM initialized",!0)},attached:function(){this.logState(this.localName+"#"+this.id+" was attached",!0)},detached:function(){this.logState(this.localName+"#"+this.id+" was detached",!0)},attributeChanged:function(t,e){this.logState(this.localName+"#"+this.id+" attribute "+t+" was changed to "+this.getAttribute(t),!0)},logState:function(t,e){console.log(t),e&&(this.$.stateText.textContent=t)}});</script>
+</dom-module>
+<dom-module id="my-listener-icon" assetpath="/">
+    <template>
+        <style>
+            /* local styles go here */
+
+             :host {
+                display: inline-block;
+            }
+
+            iron-icon {
+                fill: rgba(0, 0, 0, 0);
+                stroke: currentcolor;
+            }
+
+             :host([pressed]) iron-icon {
+                fill: currentcolor;
+            }
+        </style>
+
+        
+        <iron-icon icon="[[listenerIcon]]">
+        </iron-icon>
+
+
+    </template>
+    <script>Polymer({is:"my-listener-icon",properties:{pressed:{type:Boolean,value:!1,notify:!0,reflectToAttribute:!0},listenerIcon:{type:String,value:"star"}},listeners:{tap:"toggle","pressed-changed":"logState"},toggle:function(){this.pressed=!this.pressed},logState:function(){console.log("State Changed")}});</script>
+</dom-module>
 </div><dom-module id="my-new-view">
-  
-  <template>
-    <style>
-      :host {
-        display: block;
+    
+    <template>
+        <style>
+             :host {
+                display: block;
+                --icon-toggle-color: white;
+                --icon-toggle-outline-color: black;
+                --icon-toggle-pressed-color: red;
+                padding: 16px;
+            }
+        </style>
 
-        padding: 16px;
-      }
-    </style>
-
-    <h1>New view</h1>
-    <paper-slider min="-100" max="100" value="50"></paper-slider>
-  </template>
-  
-  <script>Polymer({is:"my-new-view"});</script>
+        <h1>Search Bar</h1>
+        <paper-search-bar hide-filter-button="true" placeholder="Enter search term"></paper-search-bar>
+        <h1>Slider</h1>
+        <paper-slider min="-100" max="100" value="50"></paper-slider>
+        <h1>Icon Favourite</h1>
+        <icon-toggle toggle-icon="favorite"></icon-toggle>
+        <my-log-element></my-log-element>
+        <h1>Youtube Video</h1>
+        <google-youtube thumbnail="http://img.youtube.com/vi/M7lc1UVf-VE/0.jpg" video-id="M7lc1UVf-VE" height="270px" width="480px" rel="0" start="5" autoplay="0">
+        </google-youtube>
+        <h1>Listener Item</h1>
+        <my-listener-icon></my-listener-icon>
+    </template>
+    
+    <script>Polymer({is:"my-new-view"});</script>
 </dom-module>
 </body></html>

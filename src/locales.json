@@ -1,0 +1,22 @@
+{
+  "en": {
+    "timeline": "Timeline",
+    "favorites": "Favorites",
+    "test": "Test",
+    "message_search": "Enter search term",
+    "description": "Description",
+    "liked": "Liked!",
+    "message_no_items": "No items were found",
+    "message_no_favs": "No favorites were found"
+  },
+  "es": {
+    "timeline": "Muro",
+    "favorites": "Favoritos",
+    "test": "Testeo",
+    "message_search": "Introduzca su búsqueda",
+    "description": "Descripción",
+    "liked": "Te Gusta!",
+    "message_no_items": "No se ha encontrado ningún item",
+    "message_no_favs": "No se han encontrado favoritos"
+  }
+}

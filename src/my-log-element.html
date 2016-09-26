@@ -38,10 +38,10 @@
 
             },
             logState: function(state, print) {
-              if (print) {
                 console.log(state);
-                this.$.stateText.textContent = state;
-              }
+                if (print) {
+                    this.$.stateText.textContent = state;
+                }
             }
 
         });

@@ -1,0 +1,73 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
+
+<dom-module id="my-noresult-view">
+    <template>
+        <style is="custom-style">
+             :host {
+                display: block;
+            }
+
+            .flex {
+                @apply(--layout-vertical);
+                @apply(--layout-center);
+            }
+
+            div[hidden] {
+                display: none;
+            }
+        </style>
+
+        <div class="flex">
+
+            <template is="dom-if" if="{{empty}}">
+                <h3>{{text}}</h3>
+                <img src="../images/manifest/icon-192x192.png" alt="no results" />
+            </template>
+
+            <template is="dom-if" if="{{loading}}">
+                <paper-spinner active="{{loading}}"></paper-spinner>
+            </template>
+
+        </div>
+
+    </template>
+    <script>
+        Polymer({
+            is: 'my-noresult-view',
+            properties: {
+
+                empty: {
+                    type: Boolean,
+                    value: false
+                },
+                loading: {
+                    type: Boolean,
+                    value: true
+                },
+                text: {
+                    type: String,
+                    value: "No items were found"
+                },
+                state: {
+                    type: Number,
+                    value: 0,
+                    observer: '_stateChanged'
+                }
+            },
+            ready: function() {
+                console.log("loading " + this.loading);
+            },
+            // 0- all hidden, 1- loading, 2- no-items
+            _stateChanged: function() {
+                if (this.state === 0) {
+                    this.empty = false;
+                } else {
+                    this.empty = true;
+                    this.loading = (state == 1);
+                }
+            }
+        });
+    </script>
+</dom-module>

@@ -3,6 +3,8 @@
 <link rel="import" href="my-icon-toggle.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="./language-behavior.html">
+<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="my-youtube-video">
@@ -18,7 +20,6 @@
 
             .likeText {
                 display: inline;
-                ;
                 margin-left: 10px;
                 background-color: #9e9e9e;
                 color: white;
@@ -41,38 +42,58 @@
             }
 
             .flex {
-                @apply(--layout-horizontal);
                 @apply(--layout-center);
             }
 
-            .flex1child {
-                @apply(--layout-flex-1);
+            .horizontal {
+                @apply(--layout-horizontal);
             }
 
-            .flex2child {
-                @apply(--layout-flex-2);
+            .vertical {
+                @apply(--layout-vertical);
             }
 
-            .flex3child {
-                @apply(--layout-flex-3);
+            .description {
+                @apply(--layout-flex);
+                padding: 20px
             }
         </style>
+        <iron-media-query query="(min-width: 1100px)" query-matches="{{wide}}"></iron-media-query>
 
         <div class="card">
+            <h1 id="title">[[videoTitle]]<span><icon-toggle on-tap="likeVideo" pressed="{{liked}}" toggle-icon="favorite"></icon-toggle><span class="likeText" hidden$="{{!liked}}">{{localize('liked')}}</span></span></h1>
+            <template is="dom-if" if="{{wide}}">
+                <div class="flex horizontal">
+                    <google-youtube height="270px" width="480px" thumbnail="http://img.youtube.com/vi/[[videoId]]/0.jpg" video-id="[[videoId]]" autoplay="0"></google-youtube>
+                    <div class="description">
+                        <h3>{{localize('description')}}</h3>
+                        <p>
+                            [[videoDescription]]
+                        </p>
+                    </div>
+                </div>
+            </template>
 
-            <h1 id="title">[[videoTitle]]<span><icon-toggle on-tap="likeVideo" pressed="{{liked}}" toggle-icon="favorite"></icon-toggle><span class="likeText" hidden$="{{!liked}}">Liked!</span></span></h1>
-            <div class="flex">
-                <google-youtube class="flex3child" thumbnail="http://img.youtube.com/vi/[[videoId]]/0.jpg" video-id="[[videoId]]" rel="0" autoplay="0"></google-youtube>
-                <p class="flex2child">
-                    [[videoDescription]]
-                </p>
-            </div>
+            <template is="dom-if" if="{{!wide}}">
+                <div class="flex vertical">
+                    <google-youtube height="100%" width="100%" thumbnail="http://img.youtube.com/vi/[[videoId]]/0.jpg" video-id="[[videoId]]" autoplay="0"></google-youtube>
+                    <div class="description">
+                        <h3>{{localize('description')}}</h3>
+                        <p>
+                            [[videoDescription]]
+                        </p>
+                    </div>
+                </div>
+            </template>
 
         </div>
     </template>
     <script>
         Polymer({
             is: 'my-youtube-video',
+            behaviors: [
+                LanguageBehavior
+            ],
             properties: {
                 videoId: {
                     type: String
@@ -84,34 +105,44 @@
                     type: String
                 },
                 liked: {
-                    type: Boolean
-                }
+                    type: Boolean,
+                    notify: true
+                },
+                storedFavs: {
+                    type: Array,
+                    notify: true
+                },
+                language: {
+                    value: 'en',
+                    type: String
+                },
             },
+
             ready: function() {
-                console.log(this.videoId + " " + this.videoTitle + " " + this.videoDescription);
+                console.log(this.videoId + " " + this.videoTitle + " " + this.liked);
             },
             likeVideo: function() {
 
-                var favs = [];
-
-                if (localStorage.getItem("favorites")) {
-                    favs = JSON.parse(localStorage.getItem("favorites"));
-                    console.log(favs);
-                }
+                //var favs = this.storedFavs;
 
                 if (!this.liked) {
-                    if (favs.length > 0) {
-                        favs.splice(favs.indexOf(this.videoId), 1);
+                    if (this.storedFavs.length > 0 && this.storedFavs.includes(this.videoId)) {
+                        this.splice("storedFavs", this.storedFavs.indexOf(this.videoId), 1);
                         console.log(this.videoTitle + " DELETED");
-                        console.log(favs);
                     }
 
-                } else {
-                    favs[favs.length] = this.videoId;
-                    console.log(this.videoTitle + " " + this.videoId + +" SAVED");
+                } else if (!this.storedFavs.includes(this.videoId)) {
+                    this.push("storedFavs", this.videoId);
+                    console.log(this.videoTitle + " " + this.videoId + " SAVED");
                 }
-                localStorage.setItem("favorites", JSON.stringify(favs));
-            }
+
+                console.log(this.storedFavs);
+
+                localStorage.setItem("favorites", JSON.stringify(this.storedFavs));
+            },
+            attached: function() {
+                this.loadResources(this.resolveUrl('locales.json'));
+            },
         });
     </script>
 </dom-module>

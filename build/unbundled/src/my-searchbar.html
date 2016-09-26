@@ -1,0 +1,23 @@
+<html><head><link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-search/paper-search-bar.html">
+<link rel="import" href="shared-styles.html">
+
+
+</head><body><dom-module id="my-searchbar">
+    <template>
+        <style include="shared-styles">
+             :host {
+                display: block;
+                padding-left: 10px;
+                padding-top: 10px;
+                padding-right: 10px;
+                --input-font-size: 20px;
+            }
+        </style>
+        <div class="card">
+            <paper-search-bar hide-filter-button="true" placeholder="Enter search term" on-paper-search-search="search"></paper-search-bar>
+        </div>
+    </template>
+    <script>Polymer({is:"my-searchbar",search:function(){alert("Searching...")}});</script>
+</dom-module>
+</body></html>

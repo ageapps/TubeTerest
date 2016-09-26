@@ -1,0 +1,25 @@
+<!-- import an existing behavior -->
+<link rel="import" href="../bower_components/app-localize-behavior/app-localize-behavior.html">
+
+<script>
+    LanguageBehaviorImpl = {
+        /* Overriden from AppLocalizeBehavior */
+        properties: {
+            formats: {
+                type: Object,
+                value: function() {
+                    return {
+                        number: {
+                            USD: {
+                                style: 'currency',
+                                currency: '€'
+                            }
+                        }
+                    };
+                }
+            }
+        }
+    }
+
+    LanguageBehavior = [Polymer.AppLocalizeBehavior, LanguageBehaviorImpl]
+</script>

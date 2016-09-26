@@ -1,0 +1,30 @@
+<html><head><link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+</head><body><dom-module id="my-noresult-view">
+    <template>
+        <style is="custom-style">
+             :host {
+                display: block;
+            }
+
+            .flex {
+                @apply(--layout-vertical);
+                @apply(--layout-center);
+            }
+
+            div[hidden] {
+                display: none;
+            }
+        </style>
+
+        <div class="flex" hidden$="{{!active}}">
+            <h3>[[text]]</h3>
+            <img src="../images/manifest/icon-192x192.png" alt="no results">
+
+        </div>
+
+    </template>
+    <script>Polymer({is:"my-noresult-view",properties:{active:{type:Boolean,value:!1},text:{type:String,value:"No results found"}}});</script>
+</dom-module>
+</body></html>
