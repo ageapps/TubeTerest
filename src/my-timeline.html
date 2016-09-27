@@ -23,12 +23,12 @@
         </style>
 
         <div class="card">
-            <paper-search-bar id="searchBar" hide-filter-button="true" placeholder="{{localize('message_search')}}" on-paper-search-search="search"></paper-search-bar>
+            <paper-search-bar id="searchBar" hide-filter-button="true" placeholder="{{localize('message_search')}}" query="{{textInput}}" on-paper-search-search="search"></paper-search-bar>
         </div>
 
         <my-noresult-view text="{{localize('message_no_items')}}" loading="[[loading]]" empty="[[empty]]"></my-noresult-view>
 
-        <iron-ajax id="ajax" auto url="https://www.googleapis.com/youtube/v3/search" params$='{"part":"snippet", "q":"{{textSearched}}", "key": "AIzaSyAuecFZ9xJXbGDkQYWBmYrtzOGJD-iDIgI", "type": "video"}' handle-as="json" on-response="hresponse"></iron-ajax>
+        <iron-ajax id="ajax" auto url="https://www.googleapis.com/youtube/v3/search" params$='{"part":"snippet", "q":"{{textSearched}}", "key": "AIzaSyAuecFZ9xJXbGDkQYWBmYrtzOGJD-iDIgI", "type": "video"}' handle-as="json" on-response="hresponse" debounce-duration="300"></iron-ajax>
 
         <template is="dom-repeat" items="{{videoItems}}" as="item">
             <my-youtube-video language="{{language}}" stored-favs="{{storedFavs}}" hidden="[[loading]]" liked="{{item.isFav}}" video-id="{{item.id.videoId}}" video-description="{{item.snippet.description}}" video-title="{{item.snippet.title}}"></my-youtube-video>
@@ -45,8 +45,14 @@
                 textSearched: {
                     type: String,
                     value: "polymer",
-                    notify: true
                 },
+                textInput: {
+                    type: String,
+                    value: "polymer",
+                    notify: true,
+                    observer: 'search'
+                },
+
                 loading: {
                     type: Boolean,
                     value: true,
@@ -60,7 +66,7 @@
                     notify: true,
                     value: function() {
                         return [];
-                    }
+                    },
                 },
                 videoItems: {
                     type: Array,
@@ -87,20 +93,29 @@
                 console.log("storedFavs: " + this.storedFavs);
             },
             search: function() {
-                var text = this.$.searchBar.query;
+                //var text = this.$.searchBar.query;
 
-                if (text) {
+                console.log("SEARCH " + this.textSearched);
+                if (this.textInput) {
                     this.empty = false;
-                    this.videoItems = [];
                     this.loading = true;
-                    this.textSearched = text;
+                    this.textSearched = this.textInput;
+                } else {
+                    this.empty = true;
+                    this.set('videoItems', []);
                 }
             },
             hresponse: function(request) {
+                if (!this.textInput) {
+                    this.empty = true;
+                    this.loading = false;
+                    return;
+                }
                 var items = request.detail.response.items;
                 if (!items.length) {
                     this.empty = true;
                 }
+                this.set('videoItems', []);
                 if (this.storedFavs && this.storedFavs.length) {
                     for (var i = 0; i < items.length; i++) {
                         if (this.storedFavs.includes(items[i].id.videoId)) {

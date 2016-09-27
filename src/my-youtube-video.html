@@ -57,6 +57,10 @@
                 @apply(--layout-flex);
                 padding: 20px
             }
+
+            .description-text {
+                max-width: 250px;
+            }
         </style>
         <iron-media-query query="(min-width: 1100px)" query-matches="{{wide}}"></iron-media-query>
 
@@ -67,7 +71,7 @@
                     <google-youtube height="270px" width="480px" thumbnail="http://img.youtube.com/vi/[[videoId]]/0.jpg" video-id="[[videoId]]" autoplay="0"></google-youtube>
                     <div class="description">
                         <h3>{{localize('description')}}</h3>
-                        <p>
+                        <p class="description-text">
                             [[videoDescription]]
                         </p>
                     </div>
