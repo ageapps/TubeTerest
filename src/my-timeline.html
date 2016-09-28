@@ -2,7 +2,7 @@
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="./my-youtube-video.html">
 <link rel="import" href="./my-searchbar.html">
-<link rel="import" href="./language-behavior.html">
+<link rel="import" href="../bower_components/app-localize-behavior/app-localize-behavior.html">
 <link rel="import" href="./my-noresult-view.html">
 <link rel="import" href="shared-styles.html">
 
@@ -39,7 +39,7 @@
         Polymer({
             is: 'my-timeline',
             behaviors: [
-                LanguageBehavior
+                Polymer.AppLocalizeBehavior
             ],
             properties: {
                 textSearched: {
@@ -88,14 +88,12 @@
                 'favsChanged(storedFavs.splices)'
             ],
             ready: function() {
-                //  this.storedFavs = [];
-                //  this.storedFavs = JSON.parse(localStorage.getItem("favorites"));
-                console.log("storedFavs: " + this.storedFavs);
+                //console.log("storedFavs: " + this.storedFavs);
             },
             search: function() {
                 //var text = this.$.searchBar.query;
 
-                console.log("SEARCH " + this.textSearched);
+                //console.log("SEARCH " + this.textSearched);
                 if (this.textInput) {
                     this.empty = false;
                     this.loading = true;
@@ -119,10 +117,10 @@
                 if (this.storedFavs && this.storedFavs.length) {
                     for (var i = 0; i < items.length; i++) {
                         if (this.storedFavs.includes(items[i].id.videoId)) {
-                            console.log("fav");
+                            //console.log("fav");
                             items[i].isFav = true;
                         } else {
-                            console.log("no fav");
+                          //  console.log("no fav");
                             items[i].isFav = false;
                         }
                         this.push('videoItems', items[i]);
@@ -139,13 +137,13 @@
             },
             favsChanged: function(changeRecord) {
                 this.empty = false;
-                console.log("TIMELINE: faves changed " + changeRecord);
+                //console.log("TIMELINE: faves changed " + changeRecord);
 
                 if (changeRecord) {
                     changeRecord.indexSplices.forEach(function(s) {
                         s.removed.forEach(function(favRemovedId) {
                             this.toggleFav(favRemovedId, false);
-                            console.log('Video ' + favRemovedId + ' UNLIKED');
+                          //  console.log('Video ' + favRemovedId + ' UNLIKED');
 
                         }, this);
 
@@ -165,7 +163,7 @@
                 for (var i = 0; i < this.videoItems.length; i++) {
                     if (this.videoItems[i].id.videoId === favRemovedId) {
                         this.set('videoItems.' + i + '.isFav', makeFav);
-                        console.log("TOGGLE: " + this.videoItems[i].isFav);
+                        //console.log("TOGGLE: " + this.videoItems[i].isFav);
                     }
                 }
             },

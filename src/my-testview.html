@@ -3,7 +3,6 @@
 <link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../bower_components/app-localize-behavior/app-localize-behavior.html">
 <link rel="import" href="./my-noresult-view.html">
-<link rel="import" href="./language-behavior.html">
 <link rel="import" href="./my-log-element.html">
 <dom-module id="my-testview">
     <template>
@@ -12,28 +11,21 @@
                 display: block;
             }
         </style>
-        <div>{{localize('liked')}}</div>
+        <div>Liked!</div>
 
         <paper-spinner active></paper-spinner>
-        <my-noresult-view text="{{localize('message_no_favs')}}" active></my-noresult-view>
+        <my-noresult-view text="no favs" active></my-noresult-view>
         <my-log-element></my-log-element>
     </template>
     <script>
         Polymer({
             is: 'my-testview',
-            behaviors: [
-                LanguageBehavior
-            ],
             properties: {
                 /* Overriden from AppLocalizeBehavior */
                 language: {
                     value: 'en',
                     type: String
                 },
-            },
-
-            attached: function() {
-                this.loadResources(this.resolveUrl('locales.json'));
             },
         });
     </script>

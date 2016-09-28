@@ -3,7 +3,7 @@
 <link rel="import" href="my-icon-toggle.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
-<link rel="import" href="./language-behavior.html">
+<link rel="import" href="../bower_components/app-localize-behavior/app-localize-behavior.html">
 <link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
 <link rel="import" href="shared-styles.html">
 
@@ -53,25 +53,25 @@
                 @apply(--layout-vertical);
             }
 
-            .description {
+            .videoDescription {
                 @apply(--layout-flex);
                 padding: 20px
             }
 
-            .description-text {
+            .videoDescriptionText {
                 max-width: 250px;
             }
         </style>
         <iron-media-query query="(min-width: 1100px)" query-matches="{{wide}}"></iron-media-query>
 
         <div class="card">
-            <h1 id="title">[[videoTitle]]<span><icon-toggle on-tap="likeVideo" pressed="{{liked}}" toggle-icon="favorite"></icon-toggle><span class="likeText" hidden$="{{!liked}}">{{localize('liked')}}</span></span></h1>
+            <h1 id="title">[[videoTitle]]<span><icon-toggle on-tap="likeVideo" pressed="{{liked}}" toggle-icon="favorite"></icon-toggle><span class="likeText" hidden$="{{!liked}}">{{localize('made_fav')}}</span></span></h1>
             <template is="dom-if" if="{{wide}}">
                 <div class="flex horizontal">
                     <google-youtube height="270px" width="480px" thumbnail="http://img.youtube.com/vi/[[videoId]]/0.jpg" video-id="[[videoId]]" autoplay="0"></google-youtube>
-                    <div class="description">
-                        <h3>{{localize('description')}}</h3>
-                        <p class="description-text">
+                    <div class="videoDescription">
+                        <h3>{{localize('video_text_title')}}</h3>
+                        <p class="videoDescriptionText">
                             [[videoDescription]]
                         </p>
                     </div>
@@ -81,8 +81,8 @@
             <template is="dom-if" if="{{!wide}}">
                 <div class="flex vertical">
                     <google-youtube height="100%" width="100%" thumbnail="http://img.youtube.com/vi/[[videoId]]/0.jpg" video-id="[[videoId]]" autoplay="0"></google-youtube>
-                    <div class="description">
-                        <h3>{{localize('description')}}</h3>
+                    <div class="videoDescription">
+                        <h3>{{localize('video_text_title')}}</h3>
                         <p>
                             [[videoDescription]]
                         </p>
@@ -96,7 +96,7 @@
         Polymer({
             is: 'my-youtube-video',
             behaviors: [
-                LanguageBehavior
+                Polymer.AppLocalizeBehavior
             ],
             properties: {
                 videoId: {
@@ -112,6 +112,9 @@
                     type: Boolean,
                     notify: true
                 },
+                wide: {
+                    type: Boolean
+                },
                 storedFavs: {
                     type: Array,
                     notify: true
@@ -122,8 +125,13 @@
                 },
             },
 
+            listeners: {
+                'app-resources-error': 'errorResources',
+                'app-resources-loaded': 'errorResources',
+            },
+
             ready: function() {
-                console.log(this.videoId + " " + this.videoTitle + " " + this.liked);
+                console.log(this.videoId + " " + this.language + " " + this.liked);
             },
             likeVideo: function() {
 
@@ -132,21 +140,29 @@
                 if (!this.liked) {
                     if (this.storedFavs.length > 0 && this.storedFavs.includes(this.videoId)) {
                         this.splice("storedFavs", this.storedFavs.indexOf(this.videoId), 1);
-                        console.log(this.videoTitle + " DELETED");
+                        //  console.log(this.videoTitle + " DELETED");
                     }
 
                 } else if (!this.storedFavs.includes(this.videoId)) {
                     this.push("storedFavs", this.videoId);
-                    console.log(this.videoTitle + " " + this.videoId + " SAVED");
+                    //  console.log(this.videoTitle + " " + this.videoId + " SAVED");
                 }
 
-                console.log(this.storedFavs);
+                //  console.log(this.storedFavs);
 
                 localStorage.setItem("favorites", JSON.stringify(this.storedFavs));
             },
             attached: function() {
-                this.loadResources(this.resolveUrl('locales.json'));
+                console.log(this.resolveUrl('locales.json'));
+                console.log(this.loadResources('src/locales.json'));
             },
+
+            loadedResources: function() {
+                console.log("loadedResources");
+            },
+            errorResources: function() {
+                console.log("errorResources");
+            }
         });
     </script>
 </dom-module>
