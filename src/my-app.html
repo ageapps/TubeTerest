@@ -70,11 +70,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <app-drawer-layout fullbleed>
             <!-- Drawer content -->
             <app-drawer>
-                <app-toolbar>Menu</app-toolbar>
+                <app-toolbar>{{localize('menu')}}</app-toolbar>
                 <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
                     <a name="timeline" href="/timeline">{{localize('timeline')}}</a>
                     <a name="favorites" href="/favorites">{{localize('favorites')}}</a>
-                    <a name="testview" href="/testview">{{localize('test')}}</a>
+                    <!-- <a name="testview" href="/testview">{{localize('test')}}</a> -->
                 </iron-selector>
             </app-drawer>
 
@@ -96,7 +96,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="view404" role="main">
                     <my-timeline stored-favs="{{storedFavs}}" name="timeline" language="{{language}}"></my-timeline>
                     <my-favorites stored-favs="{{storedFavs}}" name="favorites" language="{{language}}"></my-favorites>
-                    <my-testview name="testview" language="{{language}}"></my-testview>
+
+
+
                     <my-view404 language="{{language}}" name="view404"></my-view404>
                 </iron-pages>
             </app-header-layout>

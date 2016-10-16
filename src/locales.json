@@ -1,6 +1,7 @@
 {
     "en": {
         "timeline": "Timeline",
+        "menu": "Menu",
         "favorites": "Favorites",
         "test": "Test",
         "message_search": "Enter search term",
@@ -11,6 +12,7 @@
     },
     "es": {
         "timeline": "Muro",
+        "menu": "Menú",
         "favorites": "Favoritos",
         "test": "Testeo",
         "message_search": "Introduzca su búsqueda",
