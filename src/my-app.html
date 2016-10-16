@@ -20,19 +20,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../bower_components/paper-styles/paper-styles.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/app-localize-behavior/app-localize-behavior.html">
 <link rel="import" href="my-icons.html">
 
 <dom-module id="my-app">
     <template>
-        <style>
+        <style is="custom-style">
              :host {
                 --app-primary-color: #e91e63;
                 --app-secondary-color: black;
                 display: block;
             }
-
+            paper-toggle-button.pink {
+                --paper-toggle-button-checked-bar-color: var(--paper-pink-900);
+                --paper-toggle-button-checked-button-color:  #fff;
+                --paper-toggle-button-checked-ink-color: #fff;
+                --paper-toggle-button-unchecked-bar-color:  var(--paper-pink-900);
+                --paper-toggle-button-unchecked-button-color:  #fff;
+                --paper-toggle-button-unchecked-ink-color: #fff;
+              }
             app-header {
                 color: #fff;
                 background-color: var(--app-primary-color);
@@ -87,7 +95,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         <div main-title>Tubeterest</div>
                         <div class="lang">
                             <span title="english"> 🇬🇧 </span>
-                            <paper-toggle-button on-change="_toggleLanguage" id="switch"></paper-toggle-button>
+                            <paper-toggle-button class="pink" on-change="_toggleLanguage" id="switch"></paper-toggle-button>
                             <span title="french"> 🇪🇸 </span>
                         </div>
                     </app-toolbar>
